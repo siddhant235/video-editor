@@ -40,8 +40,6 @@ const RemotionPlayer = (props: RemotionPlayerProps) => {
                     inputProps={inputProps}
                     controls
                     style={playerStyles}
-                    initialFrame={currentFrame}
-
                 />
             )}
 

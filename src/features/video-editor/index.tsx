@@ -7,15 +7,13 @@ interface VideoEditorProps {
     playerRef: any;
     videoDuration: number; //in seconds
     videoURL: string;
-    currentFrame: any;
-    setCurrentFrame: any;
 }
 const VideoEditor = (props: VideoEditorProps) => {
-    const { playerRef, videoURL, videoDuration, currentFrame, setCurrentFrame } = props
+    const { playerRef, videoURL, videoDuration } = props
+    const videoFPS = 30
     const [tracks, setTracks] = useState<Track[]>([
         { id: 'Track 1', blocks: [] },
     ]);
-
     const inputProps = useMemo(() => {
         return {
             tracks,
@@ -25,9 +23,9 @@ const VideoEditor = (props: VideoEditorProps) => {
     return (
         <div className="relative">
             <div className="flex center w-screen justify-center ml-10 rounded-lg overflow-hidden">
-                <RemotionPlayer videoURL={videoURL} videoDuration={videoDuration} currentFrame={currentFrame} setCurrentFrame={setCurrentFrame} playerRef={playerRef} width={700} height={400} inputProps={inputProps} tracks={tracks} />
+                <RemotionPlayer videoURL={videoURL} videoDuration={videoDuration} playerRef={playerRef} width={700} height={400} inputProps={inputProps} tracks={tracks} fps={videoFPS} />
             </div>
-            <VideoTimeLine videoRef={playerRef} videoDuration={videoDuration} tracks={tracks} setTracks={setTracks} />
+            <VideoTimeLine videoRef={playerRef} videoDuration={videoDuration} tracks={tracks} setTracks={setTracks} videoFPS={videoFPS} />
         </div>
     )
 }

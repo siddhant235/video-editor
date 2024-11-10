@@ -1,24 +1,26 @@
 import { Button } from "@/components/ui/button"
 import { PlayCircle, PauseCircle, Plus } from 'lucide-react'
-import { useState } from "react"
+import { useRef, useState } from "react"
 import VideoTimeLineRuler from "@/components/video-timeline-editor/ruler"
 import TimeLineTrack from "@/components/video-timeline-editor/timeline-track"
 import { Block, Track } from "@/remotion/models/track-types"
 import { useCurrentPlayerFrame } from "@/hooks/use-current-player-frame"
 import EditBlock from "./timeline-edit-block"
+import { motion, useMotionValue } from "framer-motion"
 interface VideoTimeLineProps {
     videoRef: any;
     tracks?: any;
     setTracks?: any;
     videoDuration: number;
+    videoFPS: number
 }
 const VideoTimeLine = (props: VideoTimeLineProps) => {
-    const { videoRef, videoDuration, tracks, setTracks } = props
-    const currentVideoFrame = useCurrentPlayerFrame(videoRef) / 30
+    const { videoRef, videoDuration, tracks, setTracks, videoFPS } = props
+    const currentVideoFrame = useCurrentPlayerFrame(videoRef) / videoFPS //this gives the value in fps so dividing it by fps to get frame in seconds
     const [selectedBlock, setSelectedBlock] = useState<any | null>(null)
     const [isPlaying, setIsPlaying] = useState(false)
-    const [pixelsPerSecond] = useState(50) // Zoom level
-
+    const [pixelsPerSecond] = useState(30) // Zoom level
+    const timeLineRef = useRef<HTMLDivElement>(null)
     const handlePlay = () => {
         const video = videoRef.current
         if (video) {
@@ -42,6 +44,7 @@ const VideoTimeLine = (props: VideoTimeLineProps) => {
         if (videoRef.current) {
             videoRef.current.currentTime = newTime
         }
+        videoRef.current.seekTo(newTime * 30)
     }
 
     const handleAddBlock = () => {
@@ -62,7 +65,6 @@ const VideoTimeLine = (props: VideoTimeLineProps) => {
     const handleBlockChange = (field: keyof any, value: string | number) => {
         if (!selectedBlock) return
         const updatedBlock = { ...selectedBlock, [field]: value }
-        console.log("updated block", updatedBlock)
         setSelectedBlock(updatedBlock)
         setTracks(tracks.map((track: Track) => ({
             ...track,
@@ -90,13 +92,21 @@ const VideoTimeLine = (props: VideoTimeLineProps) => {
         })))
     }
     const handleDeleteBlock = (id: string) => {
-        setTracks(tracks.map((track: Track) => ({
+        const filteredTrackBlocks = tracks.map((track: Track) => ({
             ...track,
             blocks: track.blocks.filter((block: Block) => block.id !== id)
-        })))
+        }))
+        setTracks(filteredTrackBlocks)
         setSelectedBlock(null)
     }
-
+    const handleDragEnd = (event: any, info: any) => {
+        const newTime = (info.point.x * videoFPS) / pixelsPerSecond
+        if (videoRef.current) {
+            videoRef.current.currentTime = newTime
+        }
+        videoRef.current.seekTo(newTime)
+    }
+    const x = useMotionValue(currentVideoFrame)
 
     return (
         <div className="flex h-screen p-4">
@@ -114,9 +124,9 @@ const VideoTimeLine = (props: VideoTimeLineProps) => {
                     </Button>
                 </div>
                 <div className="border rounded p-4 mb-4 overflow-x-auto">
-                    <div style={{ width: `${videoDuration * pixelsPerSecond}px` }}>
-                        <VideoTimeLineRuler duration={videoDuration} framesPerSecond={50} />
-                        <div className="relative" onClick={handleTimelineClick}>
+                    <div ref={timeLineRef} style={{ width: `${videoDuration * pixelsPerSecond}px` }}>
+                        <VideoTimeLineRuler duration={videoDuration} pixelsPerSecond={pixelsPerSecond} />
+                        <div className="relative" >
                             {tracks.map((track: Track) => (
                                 <TimeLineTrack
                                     key={track.id}
@@ -128,10 +138,19 @@ const VideoTimeLine = (props: VideoTimeLineProps) => {
                                     selectedBlockId={selectedBlock?.id}
                                 />
                             ))}
-                            <div
-                                className="absolute top-0 bottom-0 w-px bg-red-500"
-                                style={{ left: `${currentVideoFrame * pixelsPerSecond}px` }}
-                            />
+                            <motion.div
+                                className="absolute top-0 bottom-0 w-0.5 bg-red-500 cursor-ew-resize"
+                                style={{ x, left: `${currentVideoFrame * pixelsPerSecond}px` }}
+                                drag="x"
+                                dragMomentum={false}
+                                dragElastic={0}
+                                dragConstraints={timeLineRef}
+                                onDragEnd={handleDragEnd}
+                            >
+                                <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 bg-red-500 text-white px-1 py-0.5 rounded text-xs">
+                                    {(currentVideoFrame).toFixed(2)}s
+                                </div>
+                            </motion.div>
                         </div>
                     </div>
                 </div>

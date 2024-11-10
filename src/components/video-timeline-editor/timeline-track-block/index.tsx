@@ -22,7 +22,7 @@ const TimelineBlock = (props: TimeLineBlockProps) => {
     } = props
     const blockRef = useRef<HTMLDivElement>(null)
     const handleDrag = (event: any, info: any) => {
-        const newStart = block.startTime + info.delta.x / pixelsPerSecond
+        const newStart = (block.startTime) + info.delta.x / pixelsPerSecond
         onDrag(block.id, Math.max(0, newStart))
     }
 

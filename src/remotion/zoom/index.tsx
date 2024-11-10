@@ -9,11 +9,11 @@ const TimedZoomedVideo = (props: TimedZoomedVideoProps) => {
     const { videoURL, blockConfig } = props
     const { startTime, endTime, xAxis, yAxis, scaleFactor } = blockConfig
     const frame = useCurrentFrame();
-    const zoomStartFrame = 60; // Start frame for zoom
+    const zoomStartFrame = 0; // Start frame for zoom
     const zoomEndFrame = 90; // End frame for zoom
 
     // Coordinates to zoom into
-    const zoomX = 100;
+    const zoomX = 0;
     const zoomY = 100;
     const maxZoomScale = 2;
 
