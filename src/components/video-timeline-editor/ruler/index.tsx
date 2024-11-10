@@ -1,3 +1,5 @@
+import { ReactElement } from "react";
+
 interface TimelineRulerProps {
     duration: number;
     pixelsPerSecond: number;
@@ -5,7 +7,7 @@ interface TimelineRulerProps {
 
 const VideoTimeLineRuler = (props: TimelineRulerProps) => {
     const { duration, pixelsPerSecond } = props
-    const ticks = []
+    const ticks: ReactElement[] = []
     for (let i = 0; i <= duration; i++) {
         ticks.push(
             <div key={i} className="absolute h-4 border-l border-gray-300" style={{ left: `${i * pixelsPerSecond}px` }}>

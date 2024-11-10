@@ -26,7 +26,8 @@
     "react-dropzone": "^14.3.5",
     "remotion": "4.0.228",
     "tailwind-merge": "^2.5.4",
-    "tailwindcss-animate": "^1.0.7"
+    "tailwindcss-animate": "^1.0.7",
+    "use-debounce": "^10.0.4"
   },
   "devDependencies": {
     "@types/node": "^20",

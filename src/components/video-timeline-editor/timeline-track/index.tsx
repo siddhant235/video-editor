@@ -1,12 +1,13 @@
+import { Block, Track } from "@/remotion/models/track-types"
 import TimelineBlock from "../timeline-track-block"
 
 interface TimeLineTrackProps {
 
-    track: any,
+    track: Track,
     pixelsPerSecond: number,
-    onSelectBlock: (block: any) => void,
-    onDragBlock: (id: string, newStart: number) => void,
-    onResizeBlock: (id: string, newDuration: number) => void,
+    onSelectBlock: (block: Block) => void,
+    onDragBlock: (id: string, newStart: number, newEnd: number) => void,
+    onResizeBlock: (id: string, newDuration: number, resizeDirection: string) => void,
     selectedBlockId: string
 
 }
@@ -22,7 +23,7 @@ const TimeLineTrack = (props: TimeLineTrackProps) => {
     } = props
     return (
         <div className="relative h-16 bg-gray-100 mb-2 overflow-hidden">
-            {track.blocks.map((block: any) => (
+            {track.blocks.map((block: Block) => (
                 <TimelineBlock
                     key={block.id}
                     block={block}

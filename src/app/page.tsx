@@ -16,7 +16,6 @@ export default function Home() {
 
   }
   const canViewEditor = playerRef && videoDuration && uploadedVideoURL
-  console.log("duration", playerRef)
   return (
     <>
       <VideoUploadCard handleUploadedVideoCallback={handleUploadedVideoCallback} handleVideoDurationCallback={handleVideDuration} />

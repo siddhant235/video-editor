@@ -8,7 +8,7 @@ import { X } from "lucide-react";
 
 interface EditBlockProps {
     selectedBlock: Block;
-    handleBlockChange: (name: any, event: any) => void
+    handleBlockChange: (name, event) => void
     onClose: () => void
     handleDeleteBlock: (blockId: string) => void
 }
@@ -62,7 +62,7 @@ const EditBlock = (props: EditBlockProps) => {
                         />
                     </div>
                     <div>
-                        <Label htmlFor="duration">Scale</Label>
+                        <Label htmlFor="scale">Scale</Label>
                         <Input
                             id="scale"
                             type="number"

@@ -1,4 +1,4 @@
-import { interpolate, useCurrentFrame, OffthreadVideo, Video } from "remotion";
+import { interpolate, useCurrentFrame, Video } from "remotion";
 import { Block } from "../models/track-types";
 
 interface TimedZoomedVideoProps {
@@ -9,13 +9,13 @@ const TimedZoomedVideo = (props: TimedZoomedVideoProps) => {
     const { videoURL, blockConfig } = props
     const { startTime, endTime, xAxis, yAxis, scaleFactor } = blockConfig
     const frame = useCurrentFrame();
-    const zoomStartFrame = 0; // Start frame for zoom
-    const zoomEndFrame = 90; // End frame for zoom
+    const zoomStartFrame = startTime * 30; // Start frame for zoom
+    const zoomEndFrame = endTime * 30; // End frame for zoom
 
     // Coordinates to zoom into
-    const zoomX = 0;
-    const zoomY = 100;
-    const maxZoomScale = 2;
+    const zoomX = xAxis;
+    const zoomY = yAxis;
+    const maxZoomScale = scaleFactor;
 
     const scale = interpolate(
         frame,

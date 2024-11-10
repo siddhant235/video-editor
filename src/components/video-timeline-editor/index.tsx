@@ -1,23 +1,25 @@
 import { Button } from "@/components/ui/button"
 import { PlayCircle, PauseCircle, Plus } from 'lucide-react'
-import { useRef, useState } from "react"
+import { RefObject, useRef, useState } from "react"
 import VideoTimeLineRuler from "@/components/video-timeline-editor/ruler"
 import TimeLineTrack from "@/components/video-timeline-editor/timeline-track"
 import { Block, Track } from "@/remotion/models/track-types"
 import { useCurrentPlayerFrame } from "@/hooks/use-current-player-frame"
 import EditBlock from "./timeline-edit-block"
 import { motion, useMotionValue } from "framer-motion"
+import { PlayerRef } from "@remotion/player"
+import { useDebouncedCallback } from 'use-debounce';
 interface VideoTimeLineProps {
-    videoRef: any;
-    tracks?: any;
-    setTracks?: any;
+    videoRef: RefObject<PlayerRef>
+    tracks: Track[];
+    setTracks: React.Dispatch<React.SetStateAction<Track[]>>;
     videoDuration: number;
     videoFPS: number
 }
 const VideoTimeLine = (props: VideoTimeLineProps) => {
     const { videoRef, videoDuration, tracks, setTracks, videoFPS } = props
     const currentVideoFrame = useCurrentPlayerFrame(videoRef) / videoFPS //this gives the value in fps so dividing it by fps to get frame in seconds
-    const [selectedBlock, setSelectedBlock] = useState<any | null>(null)
+    const [selectedBlock, setSelectedBlock] = useState<Block | null>(null)
     const [isPlaying, setIsPlaying] = useState(false)
     const [pixelsPerSecond] = useState(30) // Zoom level
     const timeLineRef = useRef<HTMLDivElement>(null)
@@ -37,23 +39,12 @@ const VideoTimeLine = (props: VideoTimeLineProps) => {
         }
     }
 
-    const handleTimelineClick = (e: React.MouseEvent<HTMLDivElement>) => {
-        const rect = e.currentTarget.getBoundingClientRect()
-        const x = e.clientX - rect.left
-        const newTime = x / pixelsPerSecond
-        if (videoRef.current) {
-            videoRef.current.currentTime = newTime
-        }
-        videoRef.current.seekTo(newTime * 30)
-    }
-
     const handleAddBlock = () => {
         const newBlock: Block = {
             type: "zoom",
             id: Date.now().toString(),
-            duration: 4,
-            startTime: 2,
-            endTime: 4,
+            startTime: 0,
+            endTime: 2,
             xAxis: 100,
             yAxis: 100,
             scaleFactor: 2
@@ -62,7 +53,7 @@ const VideoTimeLine = (props: VideoTimeLineProps) => {
             index === 0 ? { ...track, blocks: [...track.blocks, newBlock] } : track
         ))
     }
-    const handleBlockChange = (field: keyof any, value: string | number) => {
+    const handleBlockChange = (field, value: string | number) => {
         if (!selectedBlock) return
         const updatedBlock = { ...selectedBlock, [field]: value }
         setSelectedBlock(updatedBlock)
@@ -74,22 +65,32 @@ const VideoTimeLine = (props: VideoTimeLineProps) => {
         })))
     }
 
-    const handleDragBlock = (id: string, newStart: number) => {
+    const handleDragBlock = useDebouncedCallback((id: string, newStart: number, newEnd: number) => {
+        console.log("handle drag block runnning", newStart, newEnd)
         setTracks(tracks.map((track: Track) => ({
             ...track,
             blocks: track.blocks.map(block =>
-                block.id === id ? { ...block, startTime: newStart } : block
+                block.id === id ? { ...block, startTime: newStart, endTime: newEnd } : block
             )
         })))
-    }
+    }, 100)
 
-    const handleResizeBlock = (id: string, newDuration: number) => {
-        setTracks(tracks.map((track: Track) => ({
-            ...track,
-            blocks: track.blocks.map(block =>
-                block.id === id ? { ...block, duration: newDuration } : block
-            )
-        })))
+    const handleResizeBlock = (id: string, newDuration: number, resizeDirection: string) => {
+        if (resizeDirection === "left") {
+            setTracks(tracks.map((track: Track) => ({
+                ...track,
+                blocks: track.blocks.map(block =>
+                    block.id === id ? { ...block, startTime: newDuration } : block
+                )
+            })))
+        } else {
+            setTracks(tracks.map((track: Track) => ({
+                ...track,
+                blocks: track.blocks.map(block =>
+                    block.id === id ? { ...block, endTime: newDuration } : block
+                )
+            })))
+        }
     }
     const handleDeleteBlock = (id: string) => {
         const filteredTrackBlocks = tracks.map((track: Track) => ({
@@ -99,12 +100,11 @@ const VideoTimeLine = (props: VideoTimeLineProps) => {
         setTracks(filteredTrackBlocks)
         setSelectedBlock(null)
     }
-    const handleDragEnd = (event: any, info: any) => {
+    const handleDragEnd = (event, info) => {
         const newTime = (info.point.x * videoFPS) / pixelsPerSecond
-        if (videoRef.current) {
-            videoRef.current.currentTime = newTime
+        if (videoRef && videoRef.current) {
+            videoRef.current.seekTo(newTime)
         }
-        videoRef.current.seekTo(newTime)
     }
     const x = useMotionValue(currentVideoFrame)
 
@@ -133,9 +133,9 @@ const VideoTimeLine = (props: VideoTimeLineProps) => {
                                     track={track}
                                     pixelsPerSecond={pixelsPerSecond}
                                     onSelectBlock={setSelectedBlock}
-                                    onDragBlock={handleDragBlock}
+                                    onDragBlock={(id, newStart, newEnd) => handleDragBlock(id, newStart, newEnd)}
                                     onResizeBlock={handleResizeBlock}
-                                    selectedBlockId={selectedBlock?.id}
+                                    selectedBlockId={selectedBlock?.id || ""}
                                 />
                             ))}
                             <motion.div

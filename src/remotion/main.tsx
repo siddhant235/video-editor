@@ -1,7 +1,7 @@
 
 
 import React from 'react';
-import { AbsoluteFill, Sequence, OffthreadVideo, Video } from 'remotion';
+import { AbsoluteFill, Sequence, OffthreadVideo } from 'remotion';
 import { Block, Track } from "./models/track-types"
 import TimedZoomedVideo from './zoom';
 
@@ -16,19 +16,19 @@ const BlockComp: React.FC<{
     throw new Error(`Unknown item type: ${JSON.stringify(block)}`);
 };
 
-const Track: React.FC<{
+const TrackComp: React.FC<{
     track: Track;
     videoURL: string
 }> = ({ track, videoURL }) => {
     return (
         <AbsoluteFill>
             {track.blocks.map((block) => {
-                console.log("block data", block)
+                const duration = block.endTime - block.startTime
                 return (
                     <Sequence
                         key={block.id}
                         from={block.startTime * 30}
-                        durationInFrames={block.duration}
+                        durationInFrames={duration * 30}
                     >
                         <BlockComp block={block} videoURL={videoURL} />
                     </Sequence>
@@ -45,11 +45,11 @@ export const Main: React.FC<{
     console.log("tracks data", tracks)
     return (
         <AbsoluteFill>
-            <Video src={videoURL} />
+            <OffthreadVideo src={videoURL} />
             src={videoURL}
 
             {tracks.map((track) => {
-                return <Track track={track} key={track.id} videoURL={videoURL} />;
+                return <TrackComp track={track} key={track.id} videoURL={videoURL} />;
             })}
         </AbsoluteFill>
     );

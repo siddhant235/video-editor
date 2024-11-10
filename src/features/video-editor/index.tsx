@@ -2,9 +2,9 @@ import RemotionPlayer from "@/components/remotion-video-player";
 import VideoTimeLine from "@/components/video-timeline-editor";
 import { Track } from "@/remotion/models/track-types";
 import { useMemo, useState } from "react";
-
+import { PlayerRef } from "@remotion/player"
 interface VideoEditorProps {
-    playerRef: any;
+    playerRef: React.RefObject<PlayerRef>;
     videoDuration: number; //in seconds
     videoURL: string;
 }

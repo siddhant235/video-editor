@@ -3,7 +3,6 @@ export type ZoomBlock = {
     id: string;
     startTime: number;
     endTime: number;
-    duration: number;
     xAxis: number;
     yAxis: number;
     scaleFactor: number
