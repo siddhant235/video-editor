@@ -1,39 +1,16 @@
-
-type BaseItem = {
-    from: number;
-    durationInFrames: number;
-    id: string;
-};
-
-export type SolidItem = BaseItem & {
-    type: 'solid';
-    color: string;
-};
-
-export type TextItem = BaseItem & {
-    type: 'text';
-    text: string;
-    color: string;
-};
-
-export type VideoItem = BaseItem & {
-    type: 'video';
-    src: string;
-};
-
-export type ZoomBlock = BaseItem & {
+export type ZoomBlock = {
     type: "zoom",
+    id: string;
     startTime: number;
     endTime: number;
+    duration: number;
     xAxis: number;
     yAxis: number;
     scaleFactor: number
 
 }
-
-export type Item = SolidItem | TextItem | VideoItem | ZoomBlock;
-
+export type Block = ZoomBlock;
 export type Track = {
-    name: string;
-    items: Item[];
+    id: string;
+    blocks: Block[];
 };

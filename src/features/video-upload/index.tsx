@@ -4,7 +4,7 @@ import { useState, useCallback, useRef } from 'react'
 import { useDropzone } from 'react-dropzone'
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { Upload, X, Play, Upload as UploadIcon } from "lucide-react"
+import { Upload, X, Play } from "lucide-react"
 interface VideoUploadCardProps {
     handleUploadedVideoCallback: (videoURL: string) => void
     handleVideoDurationCallback: (duration: number) => void

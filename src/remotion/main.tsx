@@ -1,40 +1,36 @@
 
 
 import React from 'react';
-import { AbsoluteFill, Sequence, OffthreadVideo } from 'remotion';
-import { Item, Track } from "./models/track-types"
+import { AbsoluteFill, Sequence, OffthreadVideo, Video } from 'remotion';
+import { Block, Track } from "./models/track-types"
+import TimedZoomedVideo from './zoom';
 
-const ItemComp: React.FC<{
-    item: Item;
-}> = ({ item }) => {
-    if (item.type === 'solid') {
-        return <AbsoluteFill style={{ backgroundColor: item.color }} />;
+const BlockComp: React.FC<{
+    block: Block;
+    videoURL: string
+}> = ({ block, videoURL }) => {
+    if (block.type === 'zoom') {
+        return <TimedZoomedVideo videoURL={videoURL} blockConfig={block} />
     }
 
-    if (item.type === 'text') {
-        return <h1>{item.text}</h1>;
-    }
-
-    if (item.type === 'video') {
-        return <OffthreadVideo src={item.src} />;
-    }
-
-    throw new Error(`Unknown item type: ${JSON.stringify(item)}`);
+    throw new Error(`Unknown item type: ${JSON.stringify(block)}`);
 };
 
 const Track: React.FC<{
     track: Track;
-}> = ({ track }) => {
+    videoURL: string
+}> = ({ track, videoURL }) => {
     return (
         <AbsoluteFill>
-            {track.items.map((item) => {
+            {track.blocks.map((block) => {
+                console.log("block data", block)
                 return (
                     <Sequence
-                        key={item.id}
-                        from={item.from}
-                        durationInFrames={item.durationInFrames}
+                        key={block.id}
+                        from={block.startTime * 30}
+                        durationInFrames={block.duration}
                     >
-                        <ItemComp item={item} />
+                        <BlockComp block={block} videoURL={videoURL} />
                     </Sequence>
                 );
             })}
@@ -44,11 +40,16 @@ const Track: React.FC<{
 
 export const Main: React.FC<{
     tracks: Track[];
-}> = ({ tracks }) => {
+    videoURL: string
+}> = ({ tracks, videoURL }) => {
+    console.log("tracks data", tracks)
     return (
         <AbsoluteFill>
+            <Video src={videoURL} />
+            src={videoURL}
+
             {tracks.map((track) => {
-                return <Track track={track} key={track.name} />;
+                return <Track track={track} key={track.id} videoURL={videoURL} />;
             })}
         </AbsoluteFill>
     );

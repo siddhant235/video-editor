@@ -1,18 +1,15 @@
 "use client"
-import RemotionPlayer from "@/components/remotion-video-player";
-import VideoTimeline from "@/components/video-timeline";
+import VideoEditor from "@/features/video-editor";
 import VideoUploadCard from "@/features/video-upload";
-import { Editor } from "@/remotion/editor";
-import TimedZoomedVideo from "@/remotion/zoom";
 import { useRef, useState } from "react";
-
+import { PlayerRef } from "@remotion/player";
 export default function Home() {
   const [uploadedVideoURL, setUploadedVideoURL] = useState<string>()
   const [videoDuration, setVideoDuration] = useState<number>()
   const [currentFrame, setCurrentFrame] = useState(0);
-  const playerRef = useRef(null);
+  const playerRef = useRef<PlayerRef>(null);
+
   const handleUploadedVideoCallback = (videoURL: string) => {
-    console.log("video URL", videoURL)
     setUploadedVideoURL(videoURL)
   }
   const handleVideDuration = (duration: number) => {
@@ -21,17 +18,17 @@ export default function Home() {
   }
   const handleFrameSelect = (newFrame: number) => {
     setCurrentFrame(newFrame);
-    playerRef.current.pause(); // Pause playback
-    playerRef.current.seekTo(newFrame); // Seek player to new frame
+    if (playerRef && playerRef.current) {
+      playerRef.current.pause();
+      playerRef.current.seekTo(newFrame);
+    }
   };
-
-  console.log("duration", videoDuration)
+  const canViewEditor = playerRef && videoDuration && uploadedVideoURL
+  console.log("duration", playerRef)
   return (
     <>
       <VideoUploadCard handleUploadedVideoCallback={handleUploadedVideoCallback} handleVideoDurationCallback={handleVideDuration} />
-      {uploadedVideoURL && <RemotionPlayer videoURL={uploadedVideoURL} currentFrame={currentFrame} setCurrentFrame={setCurrentFrame} playerRef={playerRef} />}
-      {videoDuration && <VideoTimeline videoDuration={videoDuration} currentFrame={currentFrame} setCurrentFrame={setCurrentFrame} onFrameSelect={handleFrameSelect} playerRef={playerRef} />}
-      {/* <Editor /> */}
+      {canViewEditor && <VideoEditor playerRef={playerRef} videoDuration={videoDuration} videoURL={uploadedVideoURL} currentFrame={currentFrame} setCurrentFrame={setCurrentFrame} />}
     </>
   );
 }
