@@ -59,7 +59,6 @@ const VideoTimeLine = (props: VideoTimeLineProps) => {
             index === 0 ? { ...track, blocks: [...track.blocks, newBlock] } : track
         ))
     }
-    console.log("new tracks", tracks)
     const handleBlockChange = (field: keyof any, value: string | number) => {
         if (!selectedBlock) return
         const updatedBlock = { ...selectedBlock, [field]: value }
@@ -90,46 +89,57 @@ const VideoTimeLine = (props: VideoTimeLineProps) => {
             )
         })))
     }
+    const handleDeleteBlock = (id: string) => {
+        setTracks(tracks.map((track: Track) => ({
+            ...track,
+            blocks: track.blocks.filter((block: Block) => block.id !== id)
+        })))
+        setSelectedBlock(null)
+    }
+
 
     return (
-        <div className="p-4">
-            <div className="mb-4">
-            </div>
-            <div className="mb-4 flex justify-center space-x-2">
-                <Button onClick={handlePlay} disabled={isPlaying}>
-                    <PlayCircle className="mr-2 h-4 w-4" /> Play
-                </Button>
-                <Button onClick={handlePause} disabled={!isPlaying}>
-                    <PauseCircle className="mr-2 h-4 w-4" /> Pause
-                </Button>
-                <Button onClick={handleAddBlock}>
-                    <Plus className="mr-2 h-4 w-4" /> Add zoom Block
-                </Button>
-            </div>
-            <div className="border rounded p-4 mb-4 overflow-x-auto">
-                <div style={{ width: `${videoDuration * pixelsPerSecond}px` }}>
-                    <VideoTimeLineRuler duration={videoDuration} framesPerSecond={50} />
-                    <div className="relative" onClick={handleTimelineClick}>
-                        {tracks.map((track: Track) => (
-                            <TimeLineTrack
-                                key={track.id}
-                                track={track}
-                                pixelsPerSecond={pixelsPerSecond}
-                                onSelectBlock={setSelectedBlock}
-                                onDragBlock={handleDragBlock}
-                                onResizeBlock={handleResizeBlock}
-                                selectedBlockId={selectedBlock.id}
+        <div className="flex h-screen p-4">
+            <div className="flex-1 mb-4 overflow-hidden">
+
+                <div className="mb-4 flex justify-center space-x-2">
+                    <Button onClick={handlePlay} disabled={isPlaying}>
+                        <PlayCircle className="mr-2 h-4 w-4" /> Play
+                    </Button>
+                    <Button onClick={handlePause} disabled={!isPlaying}>
+                        <PauseCircle className="mr-2 h-4 w-4" /> Pause
+                    </Button>
+                    <Button onClick={handleAddBlock}>
+                        <Plus className="mr-2 h-4 w-4" /> Add zoom Block
+                    </Button>
+                </div>
+                <div className="border rounded p-4 mb-4 overflow-x-auto">
+                    <div style={{ width: `${videoDuration * pixelsPerSecond}px` }}>
+                        <VideoTimeLineRuler duration={videoDuration} framesPerSecond={50} />
+                        <div className="relative" onClick={handleTimelineClick}>
+                            {tracks.map((track: Track) => (
+                                <TimeLineTrack
+                                    key={track.id}
+                                    track={track}
+                                    pixelsPerSecond={pixelsPerSecond}
+                                    onSelectBlock={setSelectedBlock}
+                                    onDragBlock={handleDragBlock}
+                                    onResizeBlock={handleResizeBlock}
+                                    selectedBlockId={selectedBlock?.id}
+                                />
+                            ))}
+                            <div
+                                className="absolute top-0 bottom-0 w-px bg-red-500"
+                                style={{ left: `${currentVideoFrame * pixelsPerSecond}px` }}
                             />
-                        ))}
-                        <div
-                            className="absolute top-0 bottom-0 w-px bg-red-500"
-                            style={{ left: `${currentVideoFrame * pixelsPerSecond}px` }}
-                        />
+                        </div>
                     </div>
                 </div>
             </div>
             {selectedBlock && (
-                <EditBlock selectedBlock={selectedBlock} handleBlockChange={handleBlockChange} />
+                <div className="absolute right-0 -top-[60px] transition-all">
+                    <EditBlock selectedBlock={selectedBlock} handleBlockChange={handleBlockChange} handleDeleteBlock={handleDeleteBlock} onClose={() => setSelectedBlock(null)} />
+                </div>
             )}
         </div>
     )

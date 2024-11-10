@@ -21,14 +21,13 @@ const TimelineBlock = (props: TimeLineBlockProps) => {
         selectedBlockId
     } = props
     const blockRef = useRef<HTMLDivElement>(null)
-    const duration = (block.endTime - block.startTime)
     const handleDrag = (event: any, info: any) => {
         const newStart = block.startTime + info.delta.x / pixelsPerSecond
         onDrag(block.id, Math.max(0, newStart))
     }
 
     const handleResize = (event: any, info: any) => {
-        const newDuration = duration + info.delta.x / pixelsPerSecond
+        const newDuration = block.duration + info.delta.x / pixelsPerSecond
         onResize(block.id, Math.max(0.5, newDuration))
     }
     const isBlockSelected = selectedBlockId === block.id
