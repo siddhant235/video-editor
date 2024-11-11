@@ -17,7 +17,8 @@ const VideoEditor = (props: VideoEditorProps) => {
     const inputProps = useMemo(() => {
         return {
             tracks,
-            videoURL
+            videoURL,
+            fps: videoFPS
         };
     }, [tracks]);
     return (

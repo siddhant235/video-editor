@@ -1,16 +1,17 @@
 
 
 import React from 'react';
-import { AbsoluteFill, Sequence, OffthreadVideo } from 'remotion';
+import { AbsoluteFill, Sequence, OffthreadVideo, Video } from 'remotion';
 import { Block, Track } from "./models/track-types"
 import TimedZoomedVideo from './zoom';
 
 const BlockComp: React.FC<{
     block: Block;
-    videoURL: string
-}> = ({ block, videoURL }) => {
+    videoURL: string;
+    fps: number
+}> = ({ block, videoURL, fps }) => {
     if (block.type === 'zoom') {
-        return <TimedZoomedVideo videoURL={videoURL} blockConfig={block} />
+        return <TimedZoomedVideo videoURL={videoURL} blockConfig={block} fps={fps} />
     }
 
     throw new Error(`Unknown item type: ${JSON.stringify(block)}`);
@@ -18,8 +19,9 @@ const BlockComp: React.FC<{
 
 const TrackComp: React.FC<{
     track: Track;
-    videoURL: string
-}> = ({ track, videoURL }) => {
+    videoURL: string;
+    fps: number
+}> = ({ track, videoURL, fps }) => {
     return (
         <AbsoluteFill>
             {track.blocks.map((block) => {
@@ -30,7 +32,7 @@ const TrackComp: React.FC<{
                         from={block.startTime * 30}
                         durationInFrames={duration * 30}
                     >
-                        <BlockComp block={block} videoURL={videoURL} />
+                        <BlockComp block={block} videoURL={videoURL} fps={fps} />
                     </Sequence>
                 );
             })}
@@ -40,16 +42,14 @@ const TrackComp: React.FC<{
 
 export const Main: React.FC<{
     tracks: Track[];
-    videoURL: string
-}> = ({ tracks, videoURL }) => {
-    console.log("tracks data", tracks)
+    videoURL: string;
+    fps: number
+}> = ({ tracks, videoURL, fps }) => {
     return (
         <AbsoluteFill>
-            <OffthreadVideo src={videoURL} />
-            src={videoURL}
-
+            <Video src={videoURL} />
             {tracks.map((track) => {
-                return <TrackComp track={track} key={track.id} videoURL={videoURL} />;
+                return <TrackComp track={track} key={track.id} videoURL={videoURL} fps={fps} />;
             })}
         </AbsoluteFill>
     );

@@ -43,8 +43,8 @@ const VideoTimeLine = (props: VideoTimeLineProps) => {
         const newBlock: Block = {
             type: "zoom",
             id: Date.now().toString(),
-            startTime: 0,
-            endTime: 2,
+            startTime: currentVideoFrame,
+            endTime: currentVideoFrame + 5,
             xAxis: 100,
             yAxis: 100,
             scaleFactor: 2
@@ -66,14 +66,13 @@ const VideoTimeLine = (props: VideoTimeLineProps) => {
     }
 
     const handleDragBlock = useDebouncedCallback((id: string, newStart: number, newEnd: number) => {
-        console.log("handle drag block runnning", newStart, newEnd)
         setTracks(tracks.map((track: Track) => ({
             ...track,
             blocks: track.blocks.map(block =>
                 block.id === id ? { ...block, startTime: newStart, endTime: newEnd } : block
             )
         })))
-    }, 100)
+    }, 10)
 
     const handleResizeBlock = (id: string, newDuration: number, resizeDirection: string) => {
         if (resizeDirection === "left") {
@@ -136,6 +135,7 @@ const VideoTimeLine = (props: VideoTimeLineProps) => {
                                     onDragBlock={(id, newStart, newEnd) => handleDragBlock(id, newStart, newEnd)}
                                     onResizeBlock={handleResizeBlock}
                                     selectedBlockId={selectedBlock?.id || ""}
+                                    fps={videoFPS}
                                 />
                             ))}
                             <motion.div

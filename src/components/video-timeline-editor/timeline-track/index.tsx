@@ -8,7 +8,8 @@ interface TimeLineTrackProps {
     onSelectBlock: (block: Block) => void,
     onDragBlock: (id: string, newStart: number, newEnd: number) => void,
     onResizeBlock: (id: string, newDuration: number, resizeDirection: string) => void,
-    selectedBlockId: string
+    selectedBlockId: string;
+    fps: number
 
 }
 // Track component
@@ -19,7 +20,8 @@ const TimeLineTrack = (props: TimeLineTrackProps) => {
         onSelectBlock,
         onDragBlock,
         onResizeBlock,
-        selectedBlockId
+        selectedBlockId,
+        fps
     } = props
     return (
         <div className="relative h-16 bg-gray-100 mb-2 overflow-hidden">
@@ -32,6 +34,7 @@ const TimeLineTrack = (props: TimeLineTrackProps) => {
                     onDrag={onDragBlock}
                     onResize={onResizeBlock}
                     selectedBlockId={selectedBlockId}
+                    fps={fps}
                 />
             ))}
         </div>

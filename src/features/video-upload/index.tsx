@@ -38,7 +38,6 @@ const VideoUploadCard = (props: VideoUploadCardProps) => {
     const handleUpload = () => {
         if (video) {
             // Implement your upload logic here
-            console.log("video", video)
             const blobUrl = URL.createObjectURL(video);
             const videoElement = document.createElement('video');
             videoElement.src = blobUrl;

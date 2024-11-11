@@ -8,7 +8,8 @@ interface TimeLineBlockProps {
     onSelect: (block: Block) => void,
     onDrag: (id: string, newStart: number, newEnd: number) => void,
     onResize: (id: string, newDuration: number, resizeDirection: string) => void,
-    selectedBlockId: string
+    selectedBlockId: string;
+    fps: number
 }
 
 const TimelineBlock = (props: TimeLineBlockProps) => {
@@ -18,13 +19,15 @@ const TimelineBlock = (props: TimeLineBlockProps) => {
         onSelect,
         onDrag,
         onResize,
-        selectedBlockId
+        selectedBlockId,
+        fps
     } = props
     const blockRef = useRef<HTMLDivElement>(null)
     const duration = block.endTime - block.startTime
     const handleDrag = (event, info) => {
-        const newStart = (duration) + info.delta.x / pixelsPerSecond
-        const newEnd = newStart + duration
+        const dragOffset = (info.offset.x / pixelsPerSecond)
+        const newStart = Math.max(0, block.startTime + dragOffset);
+        const newEnd = newStart + duration;
         onDrag(block.id, Math.max(0, newStart), newEnd)
     }
 
@@ -45,7 +48,7 @@ const TimelineBlock = (props: TimeLineBlockProps) => {
             ref={blockRef}
             className={`absolute h-12 bg-blue-500 rounded cursor-move ${isBlockSelected && selectedBlockStyle}`}
             style={{
-                left: `${block.startTime * pixelsPerSecond}px`,
+                left: `${Math.ceil(((block.startTime) * pixelsPerSecond))}px`,
                 width: `${duration * pixelsPerSecond}px`,
             }}
             drag="x"

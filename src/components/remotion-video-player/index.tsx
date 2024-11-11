@@ -13,7 +13,8 @@ interface RemotionPlayerProps {
     tracks: Track[];
     inputProps: {
         videoURL: string;
-        tracks: Track[]
+        tracks: Track[];
+        fps: number
     }
 }
 const RemotionPlayer = (props: RemotionPlayerProps) => {
