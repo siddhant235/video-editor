@@ -1,7 +1,7 @@
 
 
 import React from 'react';
-import { AbsoluteFill, Sequence, OffthreadVideo, Video } from 'remotion';
+import { AbsoluteFill, Sequence, Video } from 'remotion';
 import { Block, Track } from "./models/track-types"
 import TimedZoomedVideo from './zoom';
 

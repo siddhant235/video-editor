@@ -1,5 +1,5 @@
 import React from "react";
-import { interpolate, OffthreadVideo, useCurrentFrame, Video } from "remotion";
+import { interpolate, useCurrentFrame, Video } from "remotion";
 import { Block } from "../models/track-types";
 
 interface TimedZoomedVideoProps {

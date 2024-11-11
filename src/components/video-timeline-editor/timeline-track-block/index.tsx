@@ -20,7 +20,6 @@ const TimelineBlock = (props: TimeLineBlockProps) => {
         onDrag,
         onResize,
         selectedBlockId,
-        fps
     } = props
     const blockRef = useRef<HTMLDivElement>(null)
     const duration = block.endTime - block.startTime
