@@ -18,7 +18,8 @@ const VideoEditor = (props: VideoEditorProps) => {
         return {
             tracks,
             videoURL,
-            fps: videoFPS
+            fps: videoFPS,
+            playerRef: playerRef
         };
     }, [tracks]);
     return (
